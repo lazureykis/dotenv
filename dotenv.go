@@ -1,7 +1,6 @@
 package dotenv
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -10,20 +9,18 @@ import (
 )
 
 var (
-	ConfLine = regexp.MustCompile("^\\s*?(\\w[\\w\\d_]+?)\\s*?=\\s*?([^\\s]+?)\\s*?$")
+	confLine = regexp.MustCompile("^\\s*?(\\w[\\w\\d_]+?)\\s*?=\\s*?([^\\s]+?)\\s*?$")
 )
 
-const DefaultPath = ".env"
+const defaultPath = ".env"
 
 // Load environment variables from '.env' file if that file exists.
 func Go() {
 	// TODO: check home dir?
-	if fi, err := os.Stat(DefaultPath); os.IsNotExist(err) {
-		fmt.Println(fi)
-		// DefaultPath not exists
+	if _, err := os.Stat(defaultPath); os.IsNotExist(err) {
+		// defaultPath not exists
 	} else {
-		fmt.Println(err)
-		GoWithPath(DefaultPath)
+		GoWithPath(defaultPath)
 	}
 }
 
@@ -37,7 +34,7 @@ func GoWithPath(filename string) error {
 	lines := strings.Split(string(data), "\n")
 
 	for _, line := range lines {
-		matches := ConfLine.FindStringSubmatch(line)
+		matches := confLine.FindStringSubmatch(line)
 		if len(matches) == 3 {
 			key := matches[1]
 			value := maybeParseQuotes(matches[2])
