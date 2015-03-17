@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -27,7 +28,6 @@ func Go() {
 }
 
 // Load environment variables from `filename`.
-// TODO: parse quoted values.
 func GoWithPath(filename string) error {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -40,7 +40,7 @@ func GoWithPath(filename string) error {
 		matches := ConfLine.FindStringSubmatch(line)
 		if len(matches) == 3 {
 			key := matches[1]
-			value := matches[2]
+			value := maybeParseQuotes(matches[2])
 			err = os.Setenv(key, value)
 			if err != nil {
 				return err
@@ -49,4 +49,12 @@ func GoWithPath(filename string) error {
 	}
 
 	return nil
+}
+
+func maybeParseQuotes(str string) string {
+	if unquoted, err := strconv.Unquote(str); err == nil {
+		return unquoted
+	}
+
+	return str
 }
