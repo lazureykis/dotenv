@@ -18,7 +18,7 @@ import "github.com/lazureykis/dotenv"
 
 func main() {
   dotenv.Go()
-  // or dotenv.GoWithPath('/full/path/do/.env-file')
+  // or dotenv.GoWithPath('/full/path/to/.env_file')
 }
 ```
 
