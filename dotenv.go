@@ -17,7 +17,7 @@ const (
 	commentStartsWith = "#"
 )
 
-// Load environment variables from '.env' file if that file exists.
+// Go loads environment variables from '.env' file if that file exists.
 func Go() {
 	// TODO: check home dir?
 	if _, err := os.Stat(defaultPath); os.IsNotExist(err) {
@@ -27,7 +27,7 @@ func Go() {
 	}
 }
 
-// Load environment variables from `filename`.
+// GoWithPath loads environment variables from `filename`.
 func GoWithPath(filename string) error {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
