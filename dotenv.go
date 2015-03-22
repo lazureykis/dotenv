@@ -1,21 +1,12 @@
 package dotenv
 
 import (
+	"github.com/lazureykis/dotenv/parser"
 	"io/ioutil"
 	"os"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
-var (
-	confLine = regexp.MustCompile("^\\s*?(\\w[\\w\\d_]+?)\\s*?=\\s*?([^\\s]+?)\\s*?$")
-)
-
-const (
-	defaultPath       = ".env"
-	commentStartsWith = "#"
-)
+const defaultPath = ".env"
 
 // Go loads environment variables from '.env' file if that file exists.
 func Go() {
@@ -29,35 +20,30 @@ func Go() {
 
 // GoWithPath loads environment variables from `filename`.
 func GoWithPath(filename string) error {
-	data, err := ioutil.ReadFile(filename)
+	vars, err := parseFile(filename)
 	if err != nil {
 		return err
 	}
 
-	lines := strings.Split(string(data), "\n")
+	return setEnvVars(vars)
+}
 
-	for _, line := range lines {
-		if strings.Index(line, commentStartsWith) == 0 {
-			continue
-		}
-		matches := confLine.FindStringSubmatch(line)
-		if len(matches) == 3 {
-			key := matches[1]
-			value := maybeParseQuotes(matches[2])
-			err = os.Setenv(key, value)
-			if err != nil {
-				return err
-			}
+func parseFile(filename string) (map[string]string, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return parser.ParseEnvVars(string(data)), nil
+}
+
+func setEnvVars(vars map[string]string) error {
+	for key, value := range vars {
+		err := os.Setenv(key, value)
+		if err != nil {
+			return err
 		}
 	}
 
 	return nil
-}
-
-func maybeParseQuotes(str string) string {
-	if unquoted, err := strconv.Unquote(str); err == nil {
-		return unquoted
-	}
-
-	return str
 }
