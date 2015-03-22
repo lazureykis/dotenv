@@ -47,3 +47,15 @@ func TestGoQuoted(t *testing.T) {
 	assertEnvValue(t, "OPTION_G", "")
 	assertEnvValue(t, "OPTION_H", "\n")
 }
+
+func TestGoComments(t *testing.T) {
+	err := GoWithPath("fixtures/comments.env")
+	if err != nil {
+		t.Error(err)
+	}
+
+	assertEnvValue(t, "COMMENT", "")
+	assertEnvValue(t, "#COMMENT", "")
+	assertEnvValue(t, "PLAIN", "true")
+	assertEnvValue(t, "ARG", "1")
+}

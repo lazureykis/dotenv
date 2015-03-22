@@ -12,7 +12,10 @@ var (
 	confLine = regexp.MustCompile("^\\s*?(\\w[\\w\\d_]+?)\\s*?=\\s*?([^\\s]+?)\\s*?$")
 )
 
-const defaultPath = ".env"
+const (
+	defaultPath       = ".env"
+	commentStartsWith = "#"
+)
 
 // Load environment variables from '.env' file if that file exists.
 func Go() {
@@ -34,6 +37,9 @@ func GoWithPath(filename string) error {
 	lines := strings.Split(string(data), "\n")
 
 	for _, line := range lines {
+		if strings.Index(line, commentStartsWith) == 0 {
+			continue
+		}
 		matches := confLine.FindStringSubmatch(line)
 		if len(matches) == 3 {
 			key := matches[1]
